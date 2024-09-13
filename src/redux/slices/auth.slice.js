@@ -3,36 +3,23 @@ import axios from "axios";
 import setToken from "../../helpers/token";
 
 const initialState = {
-  user: JSON.parse(localStorage.getItem("user")),
-  token: localStorage.getItem("token"),
-  isAuth: Boolean(localStorage.getItem("isAuth")),
-  errors: null,
-  isLoading: false,
-};
+    user: {},
+    token: localStorage.getItem("token") || null,
+    isAuth: Boolean(localStorage.getItem("isAuth")),
+    userType: null,
+    errors: null,
+    isLoading: false,
+  };
 
-//thunk
-const storeAuthData = (token, user) => {
-  localStorage.setItem("token", token);
-  localStorage.setItem("isAuth", true);
-  localStorage.setItem("user", JSON.stringify(user));
-};
-
-const clearAuthData = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("isAuth");
-  localStorage.removeItem("user");
-};
-
+// Thunks
 export const login = createAsyncThunk(
   "auth/login",
   async (info, { rejectWithValue }) => {
     try {
-      const res = await axios.post("/user/login", info);
-      console.log("res", res);
+      const res = await axios.post("http://localhost:5000/user/login", info);
       return res.data;
     } catch (error) {
-      console.log("error", error);
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || "Unknown error occurred");
     }
   }
 );
@@ -42,11 +29,10 @@ export const getMe = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       setToken();
-      const res = await axios.get("/user/me");
+      const res = await axios.get("http://localhost:5000/user/me");
       return res.data;
     } catch (error) {
-      console.log("error", error);
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || "Unknown error occurred");
     }
   }
 );
@@ -55,11 +41,10 @@ export const register = createAsyncThunk(
   "auth/register",
   async (info, { rejectWithValue }) => {
     try {
-      const res = await axios.post("/user/register", info);
-      console.log("Response data:", res.data); 
+      const res = await axios.post("http://localhost:5000/user/register", info);
       return res.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || "Unknown error occurred");
     }
   }
 );
@@ -72,50 +57,43 @@ const authSlice = createSlice({
       localStorage.clear();
       state.isLoading = false;
       state.token = null;
-      state.isAuth = null;
+      state.isAuth = false;
       state.errors = null;
-      state.user = null;
+      state.user = {};
+      state.userType = null;
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(login.pending, (state) => {
-        state.isLoading = true;
-      })
       .addCase(login.fulfilled, (state, { payload }) => {
-        storeAuthData(payload.token, payload.user);
+        localStorage.setItem("token", payload.token || "");
+        localStorage.setItem("isAuth", "true");
+        localStorage.setItem("user", JSON.stringify(payload.user || {}));
+
         state.isLoading = false;
-        state.token = payload.token;
+        state.token = payload.token || null;
         state.isAuth = true;
-        state.user = payload.user;
+        state.user = payload.user || {};
+        state.userType = payload.user?.userType || null;
         state.errors = null;
       })
-      .addCase(login.rejected, (state, { payload }) => {
-        state.isLoading = false;
-        state.token = null;
-        state.isAuth = false;
-        state.errors = payload;
-      })
-      .addCase(getMe.pending, (state) => {
-        state.isLoading = true;
-      })
       .addCase(getMe.fulfilled, (state, { payload }) => {
+        localStorage.setItem("user", JSON.stringify(payload || {}));
         state.isLoading = false;
-        state.user = payload;
-        localStorage.setItem("user", JSON.stringify(payload));
-      })
-      .addCase(getMe.rejected, (state, { payload }) => {
-        state.errors = payload;
-      })
-      .addCase(register.pending, (state) => {
-        state.isLoading = true;
+        state.user = payload || {};
+        state.userType = payload?.userType || null;
+        state.errors = null;
       })
       .addCase(register.fulfilled, (state, { payload }) => {
-        storeAuthData(payload.token, payload.user);
+        localStorage.setItem("token", payload.token || "");
+        localStorage.setItem("isAuth", "true");
+        localStorage.setItem("user", JSON.stringify(payload.user || {}));
+
         state.isLoading = false;
-        state.token = payload.token;
+        state.token = payload.token || null;
         state.isAuth = true;
-        state.user = payload.user;
+        state.user = payload.user || {};
+        state.userType = payload.user?.userType || null;
         state.errors = null;
       })
       .addCase(register.rejected, (state, { payload }) => {
