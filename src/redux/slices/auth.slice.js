@@ -27,7 +27,7 @@ export const login = createAsyncThunk(
   "auth/login",
   async (info, { rejectWithValue }) => {
     try {
-      const res = await axios.post("http://localhost:5000/user/login", info);
+      const res = await axios.post("/user/login", info);
       console.log("res", res);
       return res.data;
     } catch (error) {
@@ -42,7 +42,7 @@ export const getMe = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       setToken();
-      const res = await axios.get("http://localhost:5000/user/me");
+      const res = await axios.get("/user/me");
       return res.data;
     } catch (error) {
       console.log("error", error);
@@ -55,7 +55,7 @@ export const register = createAsyncThunk(
   "auth/register",
   async (info, { rejectWithValue }) => {
     try {
-      const res = await axios.post("http://localhost:5000/user/register", info);
+      const res = await axios.post("/user/register", info);
       console.log("Response data:", res.data); 
       return res.data;
     } catch (error) {

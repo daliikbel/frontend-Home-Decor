@@ -8,6 +8,7 @@ import store from './redux/store';
 import { BrowserRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+axios.defaults.baseURL="https://backend-home-decor-1.onrender.com/api";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store} >

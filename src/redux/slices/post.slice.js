@@ -14,7 +14,7 @@ export const addPost = createAsyncThunk(
     try {
       setToken();
       const res = await axios.post(
-        "http://localhost:5000/post/add-post",
+        "/post/add-post",
         newPost
       );
       return res.data;
@@ -30,7 +30,7 @@ export const getAllPost = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       setToken();
-      const res = await axios.get("http://localhost:5000/post/get-all-posts");
+      const res = await axios.get("/post/get-all-posts");
       console.log("res", res);
       return res.data;
     } catch (error) {
@@ -45,7 +45,7 @@ export const deletePost = createAsyncThunk(
   async (postId, { rejectWithValue }) => {
     try {
       setToken();
-      await axios.delete(`http://localhost:5000/post/delete-post/${postId}`);
+      await axios.delete(`/post/delete-post/${postId}`);
     } catch (error) {
       console.log("error", error);
       return rejectWithValue(error.response.data);
