@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import store from './redux/store';
 import { BrowserRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import axios from 'axios'; 
 
 axios.defaults.baseURL="https://backend-home-decor-1.onrender.com/api";
 const root = ReactDOM.createRoot(document.getElementById('root'));
